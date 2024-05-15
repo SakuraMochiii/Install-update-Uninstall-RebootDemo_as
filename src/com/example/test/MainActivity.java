@@ -1,9 +1,5 @@
 package com.example.test;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
@@ -17,6 +13,10 @@ import android.widget.Button;
 
 import com.example.test.utils.FileUtil;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+
 public class MainActivity extends Activity implements OnClickListener {
 
 
@@ -29,6 +29,26 @@ public class MainActivity extends Activity implements OnClickListener {
     private static final String APP_NAME = "APIDemoCloudPos.apk";
 
     public static final String PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + APP_NAME;
+
+    public static boolean writeFile(String filePath, String content, boolean append) {
+        FileWriter fileWriter = null;
+        try {
+            fileWriter = new FileWriter(filePath, append);
+            fileWriter.write(content);
+            fileWriter.close();
+            return true;
+        } catch (IOException e) {
+            throw new RuntimeException("IOException occurred. ", e);
+        } finally {
+            if (fileWriter != null) {
+                try {
+                    fileWriter.close();
+                } catch (IOException e) {
+                    throw new RuntimeException("IOException occurred. ", e);
+                }
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,26 +85,6 @@ public class MainActivity extends Activity implements OnClickListener {
             inputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    public static boolean writeFile(String filePath, String content, boolean append) {
-        FileWriter fileWriter = null;
-        try {
-            fileWriter = new FileWriter(filePath, append);
-            fileWriter.write(content);
-            fileWriter.close();
-            return true;
-        } catch (IOException e) {
-            throw new RuntimeException("IOException occurred. ", e);
-        } finally {
-            if (fileWriter != null) {
-                try {
-                    fileWriter.close();
-                } catch (IOException e) {
-                    throw new RuntimeException("IOException occurred. ", e);
-                }
-            }
         }
     }
 

@@ -1,7 +1,5 @@
 package com.example.test;
 
-import java.io.File;
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -14,33 +12,17 @@ import android.util.Log;
 
 import com.wizarpos.wizarviewagentassistant.aidl.ISystemManagerService;
 
+import java.io.File;
+
 public class UnInstallController {
 
-    private int state = 0;// 0 , 1: install , 2:uninstall , 3:reboot
-
     private static final String DEFAULT_PWD = "";
-
     private static final String TAG = "uninstallService";
-
+    private static UnInstallController singleton;
+    private int state = 0;// 0 , 1: install , 2:uninstall , 3:reboot
     private ISystemManagerService uninstallService;
     private UninstallServiceConnection connection = null;
-
-    private static UnInstallController singleton;
     private Context host;
-
-    private UnInstallController(Context host) {
-        this.host = host;
-        Log.d(TAG, "create UnInstallController");
-    }
-
-    public static UnInstallController getInstance(Context host) {
-        if (singleton == null) {
-            singleton = new UnInstallController(host);
-        }
-
-        return singleton;
-    }
-
     Handler myHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -95,21 +77,17 @@ public class UnInstallController {
         }
     };
 
+    private UnInstallController(Context host) {
+        this.host = host;
+        Log.d(TAG, "create UnInstallController");
+    }
 
-    private class UninstallServiceConnection implements ServiceConnection {
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            uninstallService = ISystemManagerService.Stub.asInterface(service);
-            Message msg = new Message();
-            msg.obj = "bind success!";
-            myHandler.sendMessage(msg);
+    public static UnInstallController getInstance(Context host) {
+        if (singleton == null) {
+            singleton = new UnInstallController(host);
         }
 
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            uninstallService = null;
-        }
+        return singleton;
     }
 
     public boolean aidlConnection(int state) {
@@ -127,5 +105,21 @@ public class UnInstallController {
             Log.d(TAG, "uninstallService is null");
         }
         return isSuccess;
+    }
+
+    private class UninstallServiceConnection implements ServiceConnection {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            uninstallService = ISystemManagerService.Stub.asInterface(service);
+            Message msg = new Message();
+            msg.obj = "bind success!";
+            myHandler.sendMessage(msg);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            uninstallService = null;
+        }
     }
 }
